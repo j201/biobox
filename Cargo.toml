@@ -1,0 +1,8 @@
+[package]
+name = "biobox"
+version = "0.1.0"
+authors = ["j201 <j201.alex@gmail.com>"]
+
+[dependencies]
+conrod = "0.44.1"
+piston_window = "0.52.0"
