@@ -1,18 +1,18 @@
-#[macro_use] extern crate conrod;
+extern crate piston;
+extern crate graphics;
 extern crate piston_window;
 
-use piston_window::{EventLoop, OpenGL, PistonWindow, UpdateEvent, WindowSettings};
+use piston_window::*;
 
 fn main() {
 	println!("Hello, world!");
 
-	let opengl = OpenGL::V3_2;
-	let mut window: PistonWindow = WindowSettings::new("Biobox", [400,300])
-		.opengl(opengl)
+	let mut window : PistonWindow = WindowSettings::new("Biobox", [400,300])
+		.opengl(OpenGL::V3_2)
 		.exit_on_esc(true)
 		.vsync(true)
 		.build()
-		.unwrap();
+		.unwrap(); // TODO: error handling
 
 	window.set_ups(60);
 
