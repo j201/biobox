@@ -72,7 +72,7 @@ impl App {
 fn main() {
 	// TODO: width/height consts
 	let mut window : PistonWindow = WindowSettings::new("Biobox", [400,400])
-		.opengl(OpenGL::V3_2)
+		.opengl(OpenGL::V2_1)
 		.exit_on_esc(true)
 		.vsync(true)
 		.build()
