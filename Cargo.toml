@@ -4,4 +4,6 @@ version = "0.1.0"
 authors = ["j201 <j201.alex@gmail.com>"]
 
 [dependencies]
-piston_window = "0.57.0"
+piston_window = "0.57.*"
+nalgebra = "0.10.*"
+rand = "0.3.*"
