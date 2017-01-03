@@ -21,6 +21,7 @@ type Point = na::Point2<f64>;
 const LINK_REST_LEN: f64 = 0.02;
 const LINK_K: f64 = 0.5;
 
+#[derive(Clone)]
 struct Link {
 	activation: f64,
 }
@@ -68,6 +69,14 @@ impl Cell {
 }
 
 type Critter = AnnGraph<Cell, Link>;
+
+impl Critter {
+	fn update(&self, dt: f64) -> Critter {
+		self.modify_nodes(|id, n| {
+			n.update(self.neighbours(id), dt)
+		})
+	}
+}
 
 struct App {
 	critters: Vec<Critter>
@@ -125,6 +134,7 @@ fn main() {
 						.draw(ellipse::circle(p.x, p.y, n.r*width), &c.draw_state, c.transform, g);
 				}
 			}
+			app.critters = app.critters.iter().map(|c| c.update(1.0/60.0)).collect();
 		});
 	}
 }

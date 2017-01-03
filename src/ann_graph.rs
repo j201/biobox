@@ -14,6 +14,15 @@ struct Edge<E> {
 	end_ids: (NodeId, NodeId)
 }
 
+impl<E: Clone> Clone for Edge<E> {
+	fn clone(&self) -> Self {
+		Edge {
+			val: self.val.clone(),
+			.. *self
+		}
+	}
+}
+
 pub struct AnnGraph<N, E> {
 	nodes: Vec<Node<N>>,
 	edges: Vec<Edge<E>>
@@ -57,7 +66,27 @@ impl<N, E> AnnGraph<N, E> {
 		&self.nodes[id].val
 	}
 
-	pub fn neighbours(&self, id: NodeId) -> &Vec<NodeId> {
-		&self.nodes[id].neighbours
+	pub fn neighbour_ids(&self, id: NodeId) -> Vec<NodeId> {
+		self.nodes[id].neighbours.clone()
+	}
+
+	pub fn neighbours(&self, id: NodeId) -> Vec<&N> {
+		self.neighbour_ids(id).into_iter().map(|_id| { self.get_node(_id) }).collect()
+	}
+}
+
+impl<N, E: Clone> AnnGraph<N, E> {
+	pub fn modify_nodes<F>(&self, f: F) -> AnnGraph<N, E>
+			where F: Fn(NodeId, &N) -> N {
+		let new_nodes = self.nodes.iter().enumerate().map(|(id, n)| {
+			Node {
+				val: f(id, &n.val),
+				neighbours: n.neighbours.clone()
+			}
+		}).collect();
+		AnnGraph {
+			nodes: new_nodes,
+			edges: self.edges.clone()
+		}
 	}
 }
