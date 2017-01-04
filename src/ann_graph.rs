@@ -9,7 +9,7 @@ struct Node<N> {
 	neighbours: Vec<NodeId>
 }
 
-struct Edge<E> {
+pub struct Edge<E> {
 	val: E,
 	end_ids: (NodeId, NodeId)
 }
