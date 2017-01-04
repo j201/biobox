@@ -84,14 +84,19 @@ struct App {
 
 impl App {
 	fn init() -> App {
-		let cell1 = Cell::init_at(Point::new(-0.1, 0.0), 0.03);
-		let cell2 = Cell::init_at(Point::new(0.1, 0.0), 0.03);
-		let mut critter = AnnGraph::new();
-		let id1 = critter.add_node(cell1, vec![]);
-		let id2 = critter.add_node(cell2, vec![(id1, Link { activation: 1.0 })]);
+		let mut critters = vec![];
+		let n_critters = 2;
 
+		for i in 0..n_critters {
+			let cell1 = Cell::init_at(Point::new(-0.1, -0.5 + i as f64), 0.03);
+			let cell2 = Cell::init_at(Point::new(0.1, -0.5 + i as f64), 0.03);
+			let mut critter = AnnGraph::new();
+			let id1 = critter.add_node(cell1, vec![]);
+			let id2 = critter.add_node(cell2, vec![(id1, Link { activation: 1.0 })]);
+			critters.push(critter);
+		}
 		App {
-			critters: vec![critter]
+			critters: critters
 		}
 	}
 }
