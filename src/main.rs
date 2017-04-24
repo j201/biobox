@@ -98,6 +98,9 @@ impl App {
 			critters: critters
 		}
 	}
+	fn update(&mut self, dt: f64) {
+		self.critters = self.critters.iter().map(|c| c.update(dt)).collect();
+	}
 }
 
 // Modifies point from a (-1,1) range to a (0,w/h) range
@@ -121,10 +124,15 @@ fn main() {
 	let mut app = App::init();
 
 	while let Some(e) = window.next() {
+		match e {
+			Event::Update(UpdateArgs{ dt }) => {
+				app.update(dt);
+			}
+			_ => {}
+		}
 		window.draw_2d(&e, |c, g| {
 			clear(color::WHITE, g);
 			for cr in &app.critters {
-				// TODO: draw edges
 				for e in cr.edges() {
 					let (n1, n2) = cr.ends(e);
 					let p1 = on_screen(&n1.p, width, height);
@@ -138,7 +146,6 @@ fn main() {
 						.draw(ellipse::circle(p.x, p.y, n.r*width), &c.draw_state, c.transform, g);
 				}
 			}
-			app.critters = app.critters.iter().map(|c| c.update(1.0/60.0)).collect();
 		});
 	}
 }
