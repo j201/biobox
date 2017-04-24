@@ -19,6 +19,8 @@ type Point = na::Point2<f64>;
 
 const LINK_REST_LEN: f64 = 0.02;
 const LINK_K: f64 = 0.5;
+const FOOD_PERIOD: f64 = 1.0;
+const FOOD_RADIUS: f64 = 3.0;
 
 #[derive(Clone)]
 struct Link {
@@ -77,8 +79,33 @@ impl Critter {
 	}
 }
 
+struct Food {
+	p: Point,
+	val: f64
+}
+
+impl Food {
+	fn new_rand() -> Food {
+		let mut rng = rand::thread_rng();
+		let range = rdist::Range::new(-1.0, 1.0);
+		Food {
+			p: Point::new(range.ind_sample(&mut rng), range.ind_sample(&mut rng)),
+			val: 1.0
+		}
+	}
+}
+
+// TODO: collision
+// - extract critter updating into an App-level update function
+// - after movement, check for overlapping cells
+//   - move these cells apart and reflect the components of their velocities parallel to the line between their centres (inelastic)
+// - if a critter collides with food, eat it
+
 struct App {
-	critters: Vec<Critter>
+	t: f64,
+	critters: Vec<Critter>,
+	food: Vec<Food>,
+	t_next_food: f64
 }
 
 impl App {
@@ -95,11 +122,19 @@ impl App {
 			critters.push(critter);
 		}
 		App {
-			critters: critters
+			critters: critters,
+			food: vec![],
+			t: 0.0,
+			t_next_food: 0.0
 		}
 	}
 	fn update(&mut self, dt: f64) {
+		self.t += dt;
 		self.critters = self.critters.iter().map(|c| c.update(dt)).collect();
+		if self.t >= self.t_next_food {
+			self.food.push(Food::new_rand());
+			self.t_next_food += FOOD_PERIOD;
+		}
 	}
 }
 
@@ -132,6 +167,11 @@ fn main() {
 		}
 		window.draw_2d(&e, |c, g| {
 			clear(color::WHITE, g);
+			for f in &app.food {
+				let p = on_screen(&f.p, width, height);
+				Ellipse::new([0.5, 1.0, 0.5, 1.0])
+					.draw(ellipse::circle(p.x, p.y, FOOD_RADIUS), &c.draw_state, c.transform, g);
+			}
 			for cr in &app.critters {
 				for e in cr.edges() {
 					let (n1, n2) = cr.ends(e);
